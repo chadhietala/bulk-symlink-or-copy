@@ -1,0 +1,22 @@
+{
+  "name": "bulk-symlink-or-copy",
+  "version": "0.0.0",
+  "description": "Bulk symlink or copy",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "bench": "node benchmarks/index.js"
+  },
+  "keywords": [
+    "fs"
+  ],
+  "author": "Chad Hietala <chadhietala@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "benchmark": "^1.0.0",
+    "exists-sync": "0.0.3",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.4.3",
+    "symlink-or-copy": "^1.0.1"
+  }
+}
