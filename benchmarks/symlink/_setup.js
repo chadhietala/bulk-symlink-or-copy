@@ -20,16 +20,20 @@ module.exports = function(dir, resultDir, count) {
     resultPath: results,
     files: files,
 
-    onCycle: function() {
+    each: function() {
       rm(results);
       seedResultDirectories(resultFiles);
     },
 
-    setup: function() {
-      rm(results);
+    before: function() {
       mkdirp(fullPath);
       makeFiles(files);
       seedResultDirectories(resultFiles);
+    },
+
+    after: function() {
+      rm(results);
+      rm(fullPath);
     }
   };
 };

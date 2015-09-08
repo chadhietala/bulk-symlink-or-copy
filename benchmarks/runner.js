@@ -10,13 +10,14 @@ module.exports = function(run) {
     log(' - ' + s.name);
     var start = process.hrtime();
 
-    setupOptions.setup();
+    setupOptions.before();
     for (var i = 0; i < run.count; i++) {
-      setupOptions.onCycle();
+      setupOptions.each();
       s.fn(setupOptions);
     }
 
     var end = process.hrtime(start);
+    setupOptions.after();
     console.info("Execution time: %ds %dms", end[0], end[1]/1000000);
   });
 };

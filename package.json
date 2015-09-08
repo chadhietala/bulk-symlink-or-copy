@@ -13,8 +13,7 @@
   "author": "Chad Hietala <chadhietala@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "benchmark": "^1.0.0",
-    "exists-sync": "0.0.3",
+    "exists-sync": "^0.0.3",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.4.3",
     "symlink-or-copy": "^1.0.1"
