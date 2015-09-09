@@ -12,6 +12,11 @@ module.exports = function(dir, resultDir, count) {
   var files = makePaths(fullPath, count);
   var results = path.join(benchPath, resultDir);
   var resultFiles = resultPaths(files, dir, resultDir);
+  var fileMapping = files.map(function(file, i) {
+    var mapping = {};
+    mapping[file] = resultFiles[i];
+    return mapping;
+  });
 
   mkdirp(results);
 
@@ -19,7 +24,7 @@ module.exports = function(dir, resultDir, count) {
     resultFiles: resultFiles,
     resultPath: results,
     files: files,
-
+    fileMapping: fileMapping,
     each: function() {
       rm(results);
       seedResultDirectories(resultFiles);
@@ -42,28 +47,29 @@ function alphabet() {
   return ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 }
 
-
-function multipleChar(char) {
-  var pieces = char.split('');
-  pieces.push(pieces[0]);
-  return pieces.join(path.sep);
-}
-
 function makePaths(fullPath, count) {
   var alphaPointer = 0;
   var benchDir;
   var benchFile;
   count = count || 4000;
   var alpha = alphabet();
+  var dirCount = 0;
 
   return Array.apply(null, Array(count)).map(function(_, i) {
-    if (alphaPointer === 26) {
+    var dir = 'bench';
+
+    if (i % 26 === 0) {
       alphaPointer = 0;
-      alpha = alpha.map(multipleChar);
+      dirCount = 0;
     }
-    benchDir = path.join(fullPath, alpha[alphaPointer]);
+
+    if (i % 7 === 0) {
+      dir = alpha[dirCount];
+      dirCount++;
+    }
+
     alphaPointer++;
-    return path.join(benchDir, i + '.js');
+    return path.join(fullPath, dir, alpha[alphaPointer] + process.hrtime()[1] + '.js');
   });
 }
 

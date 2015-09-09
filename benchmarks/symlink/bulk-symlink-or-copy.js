@@ -1,7 +1,7 @@
 var bulkSymlinkOrCopy = require('../../index');
 
 function fn(setupOptions) {
-  bulkSymlinkOrCopy(setupOptions.files, setupOptions.resultPath);
+  bulkSymlinkOrCopy(setupOptions.fileMapping);
 }
 
 module.exports.fn = fn;
