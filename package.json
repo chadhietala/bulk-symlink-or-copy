@@ -4,7 +4,7 @@
   "description": "Bulk symlink or copy",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha test",
     "bench": "node benchmarks/index.js"
   },
   "keywords": [
@@ -13,9 +13,15 @@
   "author": "Chad Hietala <chadhietala@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "chai": "^3.2.0",
     "exists-sync": "^0.0.3",
     "mkdirp": "^0.5.1",
+    "mkdirp-bulk": "^1.0.3",
+    "mocha": "^2.3.2",
     "rimraf": "^2.4.3",
     "symlink-or-copy": "^1.0.1"
+  },
+  "dependencies": {
+    "commondir": "^1.0.1"
   }
 }

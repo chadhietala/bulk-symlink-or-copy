@@ -1,4 +1,4 @@
-var bulkSymlinkOrCopy = require('../../index');
+var bulkSymlinkOrCopy = require('../../index').sync;
 
 function fn(setupOptions) {
   bulkSymlinkOrCopy(setupOptions.fileMapping);

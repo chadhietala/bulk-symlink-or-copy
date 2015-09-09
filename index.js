@@ -1,53 +1,37 @@
 
 var fs = require('fs');
 var path = require('path');
-var rm = require('rimraf').sync;
-
-function unique(arr) {
-  var obj = {};
-  for (var i = 0; i < arr.length; i++) {
-    obj[arr[i]] = true;
-  }
-  return Object.keys(obj);
-}
-
-function contains(mainPath, subPath) {
-  if (mainPath === subPath) {
-    return true;
-  }
-  mainPath = path.resolve(mainPath);
-  subPath = path.resolve(subPath);
-  return subPath.indexOf(mainPath) === 0 && subPath.slice(mainPath.length)[0] === '/';
-}
+var commondir = require('commondir');
 
 function commonBase(srcDirs, destDirs, cache) {
   var statedDirs = Object.keys(cache);
-  var srcsSorted = unique(srcDirs).filter(function(dir) {
-    return statedDirs.indexOf(dir) > -1;
-  }).sort(function(a, b) {
-    return a.split('/').length > b.split('/').length;
-  });
+  var contained = false;
+  var commonSrc = commondir(srcDirs);
+  var commonDest = commondir(destDirs);
 
-  var destsSorted = unique(destDirs).sort(function(a, b) {
-    return a.split('/').length > b.split('/').length;
-  });
+  if (cache[commonSrc]) {
+    contained = true;
+  }
 
-  var contained = srcsSorted.every(function(item, i) {
-    return contains(srcsSorted[0], item) && contains(destsSorted[0], destsSorted[i]);
-  });
+  return { contained: contained, srcDir: commondir(srcDirs), destDir: commondir(destDirs) };
+}
 
-  return { contained: contained, srcDir: srcsSorted[0], destDir: destsSorted[0] };
+function isRelativePaths(paths) {
+  return paths.every(function(path) {
+    return path[0] !== '/';
+  });
 }
 
 module.exports = function() {
   throw TypeError('only sync is currrently implemented');
 };
 
-module.exports = function(paths) {
-  var count = 0;
+module.exports.sync = function(paths) {
+  if (paths.length < 1) {
+    return;
+  }
+
   var cache = {};
-  var map = {};
-  var linked = {};
   var srcDirs = paths.map(function(paths) {
     return path.dirname(Object.keys(paths)[0]);
   });
@@ -55,6 +39,20 @@ module.exports = function(paths) {
   var destDirs = paths.map(function(paths) {
     return path.dirname(paths[Object.keys(paths)[0]]);
   });
+
+  var srcIsRelative = isRelativePaths(srcDirs);
+  var destIsRelative = isRelativePaths(destDirs);
+
+  if (srcIsRelative && destIsRelative) {
+    srcDirs = srcDirs.map(function(srcDir) {
+      return path.join(process.cwd(), srcDir);
+    });
+    destDirs = destDirs.map(function(destDir) {
+      return path.join(process.cwd(), destDir);
+    });
+  } if (srcIsRelative !== destIsRelative) {
+    throw new Error('Mixed relative and absoulte paths encountered.');
+  }
 
   srcDirs.forEach(function(srcDir, i) {
     srcDir.split('/').reduce(function(current, next) {
@@ -78,9 +76,10 @@ module.exports = function(paths) {
   });
 
   var base = commonBase(srcDirs, destDirs, cache);
+
   if (base.contained) {
     fs.symlinkSync(base.srcDir, base.destDir);
   } else {
-    throw new Error('No containing dir');
+    throw new Error('No common base encountered');
   }
 };
