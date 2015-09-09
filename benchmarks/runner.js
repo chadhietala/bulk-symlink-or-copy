@@ -12,7 +12,7 @@ module.exports = function(run) {
 
     setupOptions.before();
     for (var i = 0; i < run.count; i++) {
-      setupOptions.each();
+      setupOptions.each(s.seed);
       s.fn(setupOptions);
     }
 

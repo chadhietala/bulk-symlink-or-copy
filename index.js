@@ -1,7 +1,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var cache = {};
+var rm = require('rimraf').sync;
 
 function unique(arr) {
   var obj = {};
@@ -20,13 +20,16 @@ function contains(mainPath, subPath) {
   return subPath.indexOf(mainPath) === 0 && subPath.slice(mainPath.length)[0] === '/';
 }
 
-function commonBase(srcDirs, destDirs) {
-  var srcsSorted = unique(srcDirs).sort(function(a, b) {
-    return a.length > b.length;
+function commonBase(srcDirs, destDirs, cache) {
+  var statedDirs = Object.keys(cache);
+  var srcsSorted = unique(srcDirs).filter(function(dir) {
+    return statedDirs.indexOf(dir) > -1;
+  }).sort(function(a, b) {
+    return a.split('/').length > b.split('/').length;
   });
 
   var destsSorted = unique(destDirs).sort(function(a, b) {
-    return a.length > b.length;
+    return a.split('/').length > b.split('/').length;
   });
 
   var contained = srcsSorted.every(function(item, i) {
@@ -74,18 +77,10 @@ module.exports = function(paths) {
     }, '');
   });
 
-  var base = commonBase(srcDirs, destDirs);
+  var base = commonBase(srcDirs, destDirs, cache);
   if (base.contained) {
     fs.symlinkSync(base.srcDir, base.destDir);
   } else {
-    unique(srcDirs).forEach(function(srcPath, i) {
-      try {
-        fs.symlinkSync(srcPath, path.dirname(paths[srcPath]));
-      } catch (e) {
-        if (e.code !== 'EEXIST') {
-          throw e;
-        }
-      }
-    });
+    throw new Error('No containing dir');
   }
 };

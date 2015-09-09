@@ -10,3 +10,4 @@ function fn(setupOptions) {
 
 module.exports.fn = fn;
 module.exports.name = 'symlink-or-copy';
+module.exports.seed = true;

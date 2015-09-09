@@ -18,22 +18,22 @@ module.exports = function(dir, resultDir, count) {
     return mapping;
   });
 
-  mkdirp(results);
-
   return {
     resultFiles: resultFiles,
     resultPath: results,
     files: files,
     fileMapping: fileMapping,
-    each: function() {
+    each: function(seed) {
       rm(results);
-      seedResultDirectories(resultFiles);
+      mkdirp(results);
+      if (seed) {
+        seedResultDirectories(resultFiles);
+      }
     },
 
     before: function() {
       mkdirp(fullPath);
       makeFiles(files);
-      seedResultDirectories(resultFiles);
     },
 
     after: function() {
@@ -57,6 +57,7 @@ function makePaths(fullPath, count) {
 
   return Array.apply(null, Array(count)).map(function(_, i) {
     var dir = 'bench';
+    var letter = '';
 
     if (i % 26 === 0) {
       alphaPointer = 0;
@@ -64,12 +65,12 @@ function makePaths(fullPath, count) {
     }
 
     if (i % 7 === 0) {
-      dir = alpha[dirCount];
+      letter = alpha[dirCount];
       dirCount++;
     }
 
     alphaPointer++;
-    return path.join(fullPath, dir, alpha[alphaPointer] + process.hrtime()[1] + '.js');
+    return path.join(fullPath, dir, letter, alpha[alphaPointer] + process.hrtime()[1] + '.js');
   });
 }
 
