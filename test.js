@@ -33,11 +33,14 @@ describe('bulkSymlinkOrCopy', function() {
     fs.writeFileSync('baz/apple/orange/a/a.js', '');
 
     bulkSymlinkOrCopy.sync([
-      {'foo/a': 'result/foo/a'},
-      {'bar/a': 'result/a'},
-      {'baz/apple/orange/a': 'result/baz/apple/orange/a'}
+      {'foo/a/a.js': 'result/foo/a/a.js'},
+      {'bar/a/a.js': 'result/bar/a/a/.js'},
+      {'baz/apple/orange/a/a.js': 'result/baz/apple/orange/a/a.js'}
     ]);
 
     expect(fs.existsSync('result'), 'result should exist').to.be.true;
+    expect(fs.existsSync('result/foo/a/a.js'), 'result should exist').to.be.true;
+    expect(fs.existsSync('result/bar/a/a.js'), 'result should exist').to.be.true;
+    expect(fs.existsSync('result/baz/apple/orange/a/a.js'), 'result should exist').to.be.true;
   });
 });
